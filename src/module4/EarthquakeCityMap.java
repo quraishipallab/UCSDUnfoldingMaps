@@ -20,7 +20,7 @@ import processing.core.PApplet;
 /** EarthquakeCityMap
  * An application with an interactive map displaying earthquake data.
  * Author: UC San Diego Intermediate Software Development MOOC team
- * @author Your name here
+ * @author Masudul Quraishi
  * Date: July 17, 2015
  * */
 public class EarthquakeCityMap extends PApplet {
@@ -163,10 +163,16 @@ public class EarthquakeCityMap extends PApplet {
 	private boolean isLand(PointFeature earthquake) {
 		
 		// IMPLEMENT THIS: loop over all countries to check if location is in any of them
+		List<Feature> countries = GeoJSONReader.loadData(this, countryFile);
+		countryMarkers = MapUtils.createSimpleMarkers(countries);
 		
+		for(int i=0; i<countryMarkers.size(); i++){
+		if(isInCountry(earthquake, countryMarkers.get(i)))
+			return true;
+		}
 		// TODO: Implement this method using the helper method isInCountry
-		
 		// not inside any country
+		
 		return false;
 	}
 	
@@ -179,7 +185,24 @@ public class EarthquakeCityMap extends PApplet {
 	private void printQuakes() 
 	{
 		// TODO: Implement this method
+		List<Feature> countries = GeoJSONReader.loadData(this, countryFile);
+		countryMarkers = MapUtils.createSimpleMarkers(countries);
+		
+		List<PointFeature> earthquakes = ParseFeed.parseEarthquake(this, earthquakesURL);
+		
+		
+		for(int i=0; i<countryMarkers.size(); i++){
+			int count = 0;
+			for(int j=0; j<earthquakes.size(); j++){
+				if(countryMarkers.get(i).getLocation().x == earthquakes.get(j).getLocation().x && countryMarkers.get(i).getLocation().y == earthquakes.get(j).getLocation().y ){
+					count++;
+				}
+				
+			}
+			System.out.println(countryMarkers.get(i).getLocation()+" : "+count);	
+		}
 	}
+
 	
 	
 	
@@ -187,7 +210,7 @@ public class EarthquakeCityMap extends PApplet {
 	// This will also add the country property to the properties of the earthquake 
 	// feature if it's in one of the countries.
 	// You should not have to modify this code
-	private boolean isInCountry(PointFeature earthquake, Marker country) {
+	private boolean isInCountry(PointFeature earthquake, Marker country){
 		// getting location of feature
 		Location checkLoc = earthquake.getLocation();
 
@@ -211,7 +234,6 @@ public class EarthquakeCityMap extends PApplet {
 		// check if inside country represented by SimplePolygonMarker
 		else if(((AbstractShapeMarker)country).isInsideByLocation(checkLoc)) {
 			earthquake.addProperty("country", country.getProperty("name"));
-			
 			return true;
 		}
 		return false;

@@ -8,7 +8,7 @@ import java.util.List;
 
 //Processing library
 import processing.core.PApplet;
-
+import processing.core.PShape;
 //Unfolding libraries
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.marker.Marker;
@@ -86,8 +86,33 @@ public class EarthquakeCityMap extends PApplet {
 	    // Here is an example of how to use Processing's color method to generate 
 	    // an int that represents the color yellow.  
 	    int yellow = color(255, 255, 0);
+	    int blue = color(0,0,255);
+	    int red = color(255,0,0);
 	    
 	    //TODO: Add code here as appropriate
+	    //for each earthquake feature, we create a marker for the location. then we set the color and size of the marker
+	    for(PointFeature feature: earthquakes){
+	    	SimplePointMarker m = new SimplePointMarker(feature.getLocation());
+	    	Object mag = feature.getProperty("magnitude");
+	    	float magni = Float.parseFloat(mag.toString());
+	    	
+	    	if(magni<4.0){
+	    	m.setColor(blue);
+	    	m.setRadius(8.0f);	
+	    		}
+	    	if(magni>=4.0 && magni<=4.9){
+    		m.setColor(yellow);
+    		m.setRadius(14.0f);	
+    		}
+	    	if(magni>=5.0) {
+    		m.setColor(red);
+    		m.setRadius(20.0f);	
+    		}
+	    	markers.add(m);
+	    	
+	    }
+	    map.addMarkers(markers);
+	    
 	}
 		
 	// A suggested helper method that takes in an earthquake feature and 
@@ -103,7 +128,7 @@ public class EarthquakeCityMap extends PApplet {
 	    background(10);
 	    map.draw();
 	    addKey();
-	}
+	} 
 
 
 	// helper method to draw key in GUI
@@ -111,6 +136,36 @@ public class EarthquakeCityMap extends PApplet {
 	private void addKey() 
 	{	
 		// Remember you can use Processing's graphics methods here
+		//Drawing rectangle block
+		fill(255,255,255);
+		rect(30,50,160,250);
+		
+		//drawing three legends
+		fill(0,0,255);
+		ellipse(50,100, 10,10);
+		fill(255, 255, 0);
+		ellipse(50,140, 20,20);
+		fill(255,0,0);
+		ellipse(50,200, 30,30);
+		
+		//adding text to earthquake key box
+		textSize(15);
+		fill(0,0,0);
+		text("Earthquake Key", 50, 70);
+		
+		textSize(12);
+		text("Below 4.0", 70, 105);
+		
+		textSize(12);
+		text("4.0+ Magnitude", 70, 145);
+		
+		textSize(12);
+		text("5.0+ Magnitude", 70, 205);
+		
+		
+		
+		
+		
 	
 	}
 }
