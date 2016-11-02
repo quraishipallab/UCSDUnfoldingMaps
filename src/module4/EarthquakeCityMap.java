@@ -76,7 +76,7 @@ public class EarthquakeCityMap extends PApplet {
 		
 		// FOR TESTING: Set earthquakesURL to be one of the testing files by uncommenting
 		// one of the lines below.  This will work whether you are online or offline
-		//earthquakesURL = "test1.atom";
+		earthquakesURL = "test1.atom";
 		//earthquakesURL = "test2.atom";
 		
 		// WHEN TAKING THIS QUIZ: Uncomment the next line
@@ -186,21 +186,22 @@ public class EarthquakeCityMap extends PApplet {
 	{
 		// TODO: Implement this method
 		List<Feature> countries = GeoJSONReader.loadData(this, countryFile);
-		countryMarkers = MapUtils.createSimpleMarkers(countries);
-		
 		List<PointFeature> earthquakes = ParseFeed.parseEarthquake(this, earthquakesURL);
 		
-		
-		for(int i=0; i<countryMarkers.size(); i++){
+		int oceanCount=0;	
+		for(Feature g: countries){
 			int count = 0;
 			for(int j=0; j<earthquakes.size(); j++){
-				if(countryMarkers.get(i).getLocation().x == earthquakes.get(j).getLocation().x && countryMarkers.get(i).getLocation().y == earthquakes.get(j).getLocation().y ){
+				if(isLand(earthquakes.get(j))&& earthquakes.get(j).getProperty("title").toString().contains((CharSequence) g.getProperty("name"))){
 					count++;
 				}
-				
+				else if(!isLand(earthquakes.get(j))&& earthquakes.get(j).getProperty("title").toString().contains((CharSequence) g.getProperty("name"))) 
+					oceanCount++;
 			}
-			System.out.println(countryMarkers.get(i).getLocation()+" : "+count);	
+			if(count>0)
+			System.out.println(g.getProperty("name")+": "+count);	
 		}
+		System.out.println("OCEAN QUAKES: "+oceanCount);
 	}
 
 	
